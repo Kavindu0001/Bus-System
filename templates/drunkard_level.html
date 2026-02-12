@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drunkard Level Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: #60a5fa;
+        }
+
+        .back-btn {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 992px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .detection-section, .analysis-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #60a5fa;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .camera-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        #videoFeed {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .detection-overlay {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            z-index: 10;
+        }
+
+        .detection-status {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(239, 68, 68, 0.3);
+        }
+
+        .alcohol-level {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(96, 165, 250, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+
+        .alcohol-value {
+            font-size: 4rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #60a5fa;
+        }
+
+        .alcohol-label {
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+
+        .level-indicator {
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin: 30px 0;
+            overflow: hidden;
+        }
+
+        .level-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            background: linear-gradient(135deg, #10b981 0%, #ef4444 100%);
+        }
+
+        .level-markers {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .marker {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        .warning-box {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .warning-box.hidden {
+            display: none;
+        }
+
+        .detection-history {
+            margin-top: 30px;
+        }
+
+        .history-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid;
+        }
+
+        .history-item.safe {
+            border-left-color: #10b981;
+        }
+
+        .history-item.warning {
+            border-left-color: #f59e0b;
+        }
+
+        .history-item.danger {
+            border-left-color: #ef4444;
+        }
+
+        .history-time {
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        .history-level {
+            font-weight: bold;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .info-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .info-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #60a5fa;
+            margin-bottom: 5px;
+        }
+
+        .info-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+
+            .camera-container {
+                height: 300px;
+            }
+
+            .alcohol-value {
+                font-size: 3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1><i class="fas fa-flask"></i> Drunkard Level Detection</h1>
+            <button class="back-btn" onclick="location.href='/'">
+                <i class="fas fa-arrow-left"></i> Back to Home
+            </button>
+        </header>
+
+        <div class="main-content">
+            <div class="detection-section">
+                <h2 class="section-title"><i class="fas fa-camera"></i> Live Detection</h2>
+
+                <div class="camera-container">
+                    <img id="videoFeed" src="{{ url_for('video_feed') }}" alt="Camera Feed">
+                    <div class="detection-overlay">
+                        <div class="detection-status" id="detectionStatus">
+                            <span id="statusIndicator"></span>
+                            <span id="statusText">Initializing...</span>
+                        </div>
+                        <div class="detection-status">
+                            Alcohol Level: <span id="currentLevel">0.00%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="startDetection()">
+                        <i class="fas fa-play"></i> Start Detection
+                    </button>
+                    <button class="btn btn-danger" onclick="stopDetection()">
+                        <i class="fas fa-stop"></i> Stop Detection
+                    </button>
+                </div>
+
+                <div class="alcohol-level">
+                    <div class="alcohol-value" id="alcoholValue">0.00%</div>
+                    <div class="alcohol-label">Blood Alcohol Concentration</div>
+                </div>
+
+                <div class="level-indicator">
+                    <div class="level-fill" id="levelFill" style="width: 0%"></div>
+                </div>
+                <div class="level-markers">
+                    <span class="marker">0% (Safe)</span>
+                    <span class="marker">0.05% (Warning)</span>
+                    <span class="marker">0.08% (Danger)</span>
+                </div>
+
+                <div class="warning-box" id="warningBox">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Warning!</h3>
+                    <p>High alcohol level detected. Driving is not recommended.</p>
+                </div>
+            </div>
+
+            <div class="analysis-section">
+                <h2 class="section-title"><i class="fas fa-chart-line"></i> Analysis & History</h2>
+
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-value" id="detectionTime">0 min</div>
+                        <div class="info-label">Detection Time</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-value" id="peakLevel">0.00%</div>
+                        <div class="info-label">Peak Level</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-value" id="avgLevel">0.00%</div>
+                        <div class="info-label">Average Level</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-value" id="safePercentage">100%</div>
+                        <div class="info-label">Safe Time</div>
+                    </div>
+                </div>
+
+                <div class="detection-history">
+                    <h3 class="section-title"><i class="fas fa-history"></i> Detection History</h3>
+                    <div id="historyList">
+                        <div class="history-item safe">
+                            <div>
+                                <div class="history-level">0.02% BAC</div>
+                                <div class="history-time">Started monitoring</div>
+                            </div>
+                            <div class="history-status">SAFE</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="controls" style="margin-top: 20px;">
+                    <button class="btn btn-primary" onclick="generateReport()">
+                        <i class="fas fa-file-pdf"></i> Generate Report
+                    </button>
+                    <button class="btn" onclick="clearHistory()" style="background: rgba(255,255,255,0.1); color: white;">
+                        <i class="fas fa-trash"></i> Clear History
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let detectionActive = false;
+        let detectionStartTime = null;
+        let detectionInterval = null;
+        let history = [];
+
+        // DOM Elements
+        const alcoholValue = document.getElementById('alcoholValue');
+        const currentLevel = document.getElementById('currentLevel');
+        const levelFill = document.getElementById('levelFill');
+        const warningBox = document.getElementById('warningBox');
+        const detectionStatus = document.getElementById('detectionStatus');
+        const statusText = document.getElementById('statusText');
+        const statusIndicator = document.getElementById('statusIndicator');
+        const historyList = document.getElementById('historyList');
+
+        // Stats elements
+        const detectionTimeElement = document.getElementById('detectionTime');
+        const peakLevelElement = document.getElementById('peakLevel');
+        const avgLevelElement = document.getElementById('avgLevel');
+        const safePercentageElement = document.getElementById('safePercentage');
+
+        async function startDetection() {
+            if (detectionActive) return;
+
+            try {
+                const response = await fetch('/start_drunkard_detection', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    detectionActive = true;
+                    detectionStartTime = new Date();
+
+                    // Update UI
+                    detectionStatus.style.background = 'rgba(16, 185, 129, 0.7)';
+                    statusText.textContent = 'Detection Active';
+                    statusIndicator.innerHTML = '<span class="recording-indicator"></span>';
+
+                    // Start updating detection data
+                    startDetectionUpdates();
+
+                    showNotification('Detection started successfully', 'success');
+                } else {
+                    showNotification('Failed to start detection: ' + data.message, 'error');
+                }
+            } catch (error) {
+                console.error('Error starting detection:', error);
+                showNotification('Failed to start detection', 'error');
+            }
+        }
+
+        async function stopDetection() {
+            if (!detectionActive) return;
+
+            try {
+                const response = await fetch('/stop_drunkard_detection', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                detectionActive = false;
+
+                // Update UI
+                detectionStatus.style.background = 'rgba(239, 68, 68, 0.7)';
+                statusText.textContent = 'Detection Stopped';
+                statusIndicator.innerHTML = '';
+
+                // Stop updates
+                if (detectionInterval) {
+                    clearInterval(detectionInterval);
+                    detectionInterval = null;
+                }
+
+                showNotification('Detection stopped', 'info');
+            } catch (error) {
+                console.error('Error stopping detection:', error);
+                showNotification('Failed to stop detection', 'error');
+            }
+        }
+
+        function startDetectionUpdates() {
+            if (detectionInterval) clearInterval(detectionInterval);
+
+            detectionInterval = setInterval(async () => {
+                try {
+                    const response = await fetch('/get_drunkard_data');
+                    const data = await response.json();
+
+                    if (data.alcohol_level !== undefined) {
+                        updateAlcoholLevel(data.alcohol_level);
+                        updateHistory(data);
+                        updateStatistics();
+                    }
+                } catch (error) {
+                    console.error('Error fetching detection data:', error);
+                }
+            }, 1000); // Update every second
+        }
+
+        function updateAlcoholLevel(level) {
+            // Convert to percentage
+            const percentage = (level * 100).toFixed(2);
+
+            // Update display
+            alcoholValue.textContent = `${percentage}%`;
+            currentLevel.textContent = `${percentage}%`;
+
+            // Update progress bar
+            const fillPercentage = Math.min(100, (level / 0.15) * 100); // 0.15% is max for display
+            levelFill.style.width = `${fillPercentage}%`;
+
+            // Update color based on level
+            if (level < 0.05) {
+                levelFill.style.background = 'linear-gradient(135deg, #10b981 0%, #34d399 100%)';
+                warningBox.classList.add('hidden');
+            } else if (level < 0.08) {
+                levelFill.style.background = 'linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)';
+                warningBox.classList.remove('hidden');
+                warningBox.innerHTML = `
+                    <h3><i class="fas fa-exclamation-triangle"></i> Warning</h3>
+                    <p>Moderate alcohol level detected. Exercise caution while driving.</p>
+                `;
+                warningBox.style.background = 'rgba(245, 158, 11, 0.1)';
+                warningBox.style.border = '1px solid rgba(245, 158, 11, 0.3)';
+            } else {
+                levelFill.style.background = 'linear-gradient(135deg, #ef4444 0%, #f87171 100%)';
+                warningBox.classList.remove('hidden');
+                warningBox.innerHTML = `
+                    <h3><i class="fas fa-skull-crossbones"></i> Danger!</h3>
+                    <p>High alcohol level detected (${percentage}% BAC). Driving is prohibited.</p>
+                `;
+                warningBox.style.background = 'rgba(239, 68, 68, 0.1)';
+                warningBox.style.border = '1px solid rgba(239, 68, 68, 0.3)';
+            }
+
+            // Add to history
+            const historyEntry = {
+                timestamp: new Date().toISOString(),
+                level: level,
+                percentage: percentage
+            };
+            history.push(historyEntry);
+        }
+
+        function updateHistory(data) {
+            const historyItem = document.createElement('div');
+
+            let severityClass = 'safe';
+            let statusText = 'SAFE';
+
+            if (data.alcohol_level >= 0.08) {
+                severityClass = 'danger';
+                statusText = 'DANGER';
+            } else if (data.alcohol_level >= 0.05) {
+                severityClass = 'warning';
+                statusText = 'WARNING';
+            }
+
+            const time = new Date().toLocaleTimeString();
+            const percentage = (data.alcohol_level * 100).toFixed(2);
+
+            historyItem.className = `history-item ${severityClass}`;
+            historyItem.innerHTML = `
+                <div>
+                    <div class="history-level">${percentage}% BAC</div>
+                    <div class="history-time">${time}</div>
+                </div>
+                <div class="history-status">${statusText}</div>
+            `;
+
+            historyList.insertBefore(historyItem, historyList.firstChild);
+
+            // Keep only last 10 items
+            while (historyList.children.length > 10) {
+                historyList.removeChild(historyList.lastChild);
+            }
+        }
+
+        function updateStatistics() {
+            if (history.length === 0) return;
+
+            // Detection time
+            if (detectionStartTime) {
+                const now = new Date();
+                const diff = Math.floor((now - detectionStartTime) / 1000);
+                const minutes = Math.floor(diff / 60);
+                detectionTimeElement.textContent = `${minutes} min`;
+            }
+
+            // Peak level
+            const peak = Math.max(...history.map(h => h.level));
+            peakLevelElement.textContent = `${(peak * 100).toFixed(2)}%`;
+
+            // Average level
+            const avg = history.reduce((sum, h) => sum + h.level, 0) / history.length;
+            avgLevelElement.textContent = `${(avg * 100).toFixed(2)}%`;
+
+            // Safe percentage
+            const safeCount = history.filter(h => h.level < 0.05).length;
+            const safePercentage = (safeCount / history.length * 100).toFixed(0);
+            safePercentageElement.textContent = `${safePercentage}%`;
+        }
+
+        function generateReport() {
+            if (history.length === 0) {
+                showNotification('No data available for report', 'warning');
+                return;
+            }
+
+            const report = {
+                report_type: 'drunkard_detection',
+                generated_at: new Date().toISOString(),
+                detection_duration: detectionTimeElement.textContent,
+                statistics: {
+                    peak_alcohol_level: peakLevelElement.textContent,
+                    average_alcohol_level: avgLevelElement.textContent,
+                    safe_time_percentage: safePercentageElement.textContent,
+                    total_readings: history.length
+                },
+                readings: history.slice(-50) // Last 50 readings
+            };
+
+            // Create and download JSON report
+            const blob = new Blob([JSON.stringify(report, null, 2)], {type: 'application/json'});
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `drunkard-detection-report-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+
+            showNotification('Report generated successfully', 'success');
+        }
+
+        function clearHistory() {
+            if (confirm('Are you sure you want to clear all detection history?')) {
+                history = [];
+                historyList.innerHTML = `
+                    <div class="history-item safe">
+                        <div>
+                            <div class="history-level">0.00% BAC</div>
+                            <div class="history-time">History cleared</div>
+                        </div>
+                        <div class="history-status">SAFE</div>
+                    </div>
+                `;
+
+                // Reset statistics
+                detectionTimeElement.textContent = '0 min';
+                peakLevelElement.textContent = '0.00%';
+                avgLevelElement.textContent = '0.00%';
+                safePercentageElement.textContent = '100%';
+
+                showNotification('History cleared', 'info');
+            }
+        }
+
+        function showNotification(message, type) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            `;
+
+            const icon = type === 'success' ? 'fa-check-circle' :
+                        type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
+
+            notification.innerHTML = `
+                <i class="fas ${icon}"></i>
+                <span>${message}</span>
+            `;
+
+            document.body.appendChild(notification);
+
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            warningBox.classList.add('hidden');
+
+            // Check if detection is already running
+            fetch('/get_drunkard_status')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.detection_active) {
+                        detectionActive = true;
+                        detectionStatus.style.background = 'rgba(16, 185, 129, 0.7)';
+                        statusText.textContent = 'Detection Active';
+                        statusIndicator.innerHTML = '<span class="recording-indicator"></span>';
+                        startDetectionUpdates();
+                    }
+                })
+                .catch(console.error);
+        });
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            if (detectionActive) {
+                fetch('/stop_drunkard_detection').catch(() => {});
+            }
+        });
+    </script>
+</body>
+</html>

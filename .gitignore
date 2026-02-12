@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+.DS_Store
+.idea/
+models/
+2models/
+3models/
+static/
+

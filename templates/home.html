@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Agent Supporting Tool</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --info-color: #17a2b8;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .hero-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 3rem;
+            margin-top: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .main-title {
+            text-align: center;
+            font-size: 2.8rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 3px solid var(--secondary-color);
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 2rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            height: 100%;
+            border: 1px solid #eee;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            display: block;
+            text-align: center;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+            text-align: center;
+        }
+
+        .feature-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .feature-button {
+            width: 100%;
+            padding: 0.8rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 10px;
+            border: none;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .feature-button:hover {
+            transform: scale(1.05);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .card-passenger {
+            border-top: 5px solid var(--success-color);
+        }
+
+        .card-driver {
+            border-top: 5px solid var(--warning-color);
+        }
+
+        .card-drunkard {
+            border-top: 5px solid var(--accent-color);
+        }
+
+        .card-profit {
+            border-top: 5px solid var(--info-color);
+        }
+
+        .card-other {
+            border-top: 5px solid #9b59b6;
+        }
+
+        .card-dashboard {
+            border-top: 5px solid #3498db;
+        }
+
+        .icon-passenger {
+            color: var(--success-color);
+        }
+
+        .icon-driver {
+            color: var(--warning-color);
+        }
+
+        .icon-drunkard {
+            color: var(--accent-color);
+        }
+
+        .icon-profit {
+            color: var(--info-color);
+        }
+
+        .icon-other {
+            color: #9b59b6;
+        }
+
+        .icon-dashboard {
+            color: #3498db;
+        }
+
+        .system-overview {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .overview-title {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .overview-description {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: #555;
+            text-align: justify;
+        }
+
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 3rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .live-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background-color: var(--success-color);
+            border-radius: 50%;
+            margin-right: 5px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .system-status {
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            background: rgba(46, 204, 113, 0.1);
+            border: 1px solid rgba(46, 204, 113, 0.3);
+        }
+
+        footer {
+            margin-top: 3rem;
+            padding: 2rem 0;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            border-radius: 20px 20px 0 0;
+        }
+
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: 2rem 1rem;
+            }
+
+            .main-title {
+                font-size: 2.2rem;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: rgba(0,0,0,0.8);">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-bus me-2"></i>Travel Agent Supporting Tool
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/history">History</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about">About</a>
+                    </li>
+                </ul>
+                <div class="system-status ms-3">
+                    <span class="live-indicator"></span> System Ready
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="container">
+        <div class="hero-section">
+            <!-- Main Title -->
+            <h1 class="main-title">Travel Agent Supporting Tool</h1>
+            <p class="subtitle">A comprehensive suite of intelligent tools designed to enhance passenger safety, optimize operations, and maximize profitability for travel agencies.</p>
+
+            <!-- System Overview -->
+            <div class="system-overview">
+                <h2 class="overview-title">System Overview</h2>
+                <p class="overview-description">
+                    Our Travel Agent Supporting Tool integrates multiple advanced features to provide a complete solution for modern travel agencies. From passenger safety monitoring to driver assessment and profit optimization, this tool ensures operational excellence while maintaining the highest safety standards. The system uses AI and machine learning to provide real-time insights and automated recommendations.
+                </p>
+            </div>
+
+            <!-- Main Features Grid -->
+            <h2 class="text-center mb-4" style="color: var(--primary-color);">Main Features</h2>
+            <div class="feature-grid">
+                <!-- Passenger Anomaly Detection -->
+                <div class="feature-card card-passenger">
+                    <i class="fas fa-user-shield feature-icon icon-passenger"></i>
+                    <h3 class="feature-title">Passenger Anomaly Detection</h3>
+                    <p class="feature-description">
+                        Advanced AI-powered system that detects appearance changes and suspicious behavior in passengers. Uses facial recognition and GAN technology to identify anomalies in real-time, ensuring passenger safety and security throughout their journey.
+                    </p>
+                    <button class="feature-button" style="background: var(--success-color); color: white;" onclick="openDashboard()">
+                        <i class="fas fa-tachometer-alt me-2"></i>Open Dashboard
+                    </button>
+                    <div class="mt-3 text-center">
+                        <small>Related: <a href="/capture" class="text-success">Capture Entrance/Exit</a></small>
+                    </div>
+                </div>
+
+                <!-- Driver Ability Checking -->
+                <div class="feature-card card-driver">
+                    <i class="fas fa-car feature-icon icon-driver"></i>
+                    <h3 class="feature-title">Driver Ability Checking</h3>
+                    <p class="feature-description">
+                        Monitor driver behavior and performance in real-time. Detects fatigue, distraction, and unsafe driving patterns. Provides alerts and recommendations to ensure driver safety and maintain service quality standards.
+                    </p>
+                    <button class="feature-button" style="background: var(--warning-color); color: white;" onclick="openDrivingAbility()">
+                        <i class="fas fa-steering-wheel me-2"></i>Check Driver Ability
+                    </button>
+                </div>
+
+                <!-- Alcohol Level Detection -->
+                <div class="feature-card card-drunkard">
+                    <i class="fas fa-wine-bottle feature-icon icon-drunkard"></i>
+                    <h3 class="feature-title">Alcohol Level Detection</h3>
+                    <p class="feature-description">
+                        Real-time alcohol level monitoring system for drivers. Uses advanced sensors and AI analysis to detect impairment levels. Ensures compliance with safety regulations and prevents alcohol-related accidents.
+                    </p>
+                    <button class="feature-button" style="background: var(--accent-color); color: white;" onclick="openDrunkardDetection()">
+                        <i class="fas fa-flask me-2"></i>Detect Alcohol Level
+                    </button>
+                </div>
+
+                <!-- Profit Assessment -->
+                <div class="feature-card card-profit">
+                    <i class="fas fa-chart-line feature-icon icon-profit"></i>
+                    <h3 class="feature-title">Profit Assessment</h3>
+                    <p class="feature-description">
+                        Comprehensive profit analysis and optimization tool. Calculates operational costs, predicts profitability, and provides route optimization suggestions. Helps maximize revenue while minimizing expenses.
+                    </p>
+                    <button class="feature-button" style="background: var(--info-color); color: white;" onclick="openProfitAssessment()">
+                        <i class="fas fa-calculator me-2"></i>Assess Profit
+                    </button>
+                </div>
+
+                <!-- Other Features -->
+                <div class="feature-card card-other">
+                    <i class="fas fa-cogs feature-icon icon-other"></i>
+                    <h3 class="feature-title">Other Features</h3>
+                    <p class="feature-description">
+                        Additional tools including travel history analysis, reporting systems, maintenance scheduling, and customer feedback management. Complete suite of features to manage all aspects of travel agency operations.
+                    </p>
+                    <button class="feature-button" style="background: #9b59b6; color: white;" onclick="openOtherFeatures()">
+                        <i class="fas fa-tools me-2"></i>Explore More
+                    </button>
+                </div>
+
+                <!-- Dashboard -->
+                <div class="feature-card card-dashboard">
+                    <i class="fas fa-tachometer-alt feature-icon icon-dashboard"></i>
+                    <h3 class="feature-title">Live Dashboard</h3>
+                    <p class="feature-description">
+                        Real-time monitoring dashboard showing all system activities, alerts, and statistics. Track passenger movements, driver performance, and financial metrics in one centralized interface.
+                    </p>
+                    <button class="feature-button" style="background: #3498db; color: white;" onclick="openDashboard()">
+                        <i class="fas fa-chart-bar me-2"></i>Open Dashboard
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="quick-stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalPassengers">0</div>
+                    <div class="stat-label">Total Passengers Today</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="activeDrivers">0</div>
+                    <div class="stat-label">Active Drivers</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="anomalies">0</div>
+                    <div class="stat-label">Anomalies Detected</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="profitToday">LKR 0</div>
+                    <div class="stat-label">Today's Profit</div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="row mt-5">
+                <div class="col-12">
+                    <h4 class="text-center mb-4">Quick Access</h4>
+                    <div class="d-flex flex-wrap justify-content-center gap-3">
+                        <a href="/dashboard" class="btn btn-outline-primary">
+                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                        </a>
+                        <a href="/drunkard_level" class="btn btn-outline-danger">
+                            <i class="fas fa-wine-bottle me-2"></i>Alcohol Detection
+                        </a>
+                        <a href="/driving_ability" class="btn btn-outline-warning">
+                            <i class="fas fa-car me-2"></i>Driver Ability
+                        </a>
+                        <a href="/profit_assessment" class="btn btn-outline-info">
+                            <i class="fas fa-chart-bar me-2"></i>Profit Assessment
+                        </a>
+                        <a href="/history" class="btn btn-outline-secondary">
+                            <i class="fas fa-history me-2"></i>Travel History
+                        </a>
+                        <a href="/capture" class="btn btn-outline-success">
+                            <i class="fas fa-camera me-2"></i>Capture Images
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container text-center">
+            <p class="mb-2">© 2024 Travel Agent Supporting Tool. All rights reserved.</p>
+            <p class="text-muted">Powered by AI & Machine Learning Technologies</p>
+            <div class="mt-3">
+                <span class="me-3"><i class="fas fa-shield-alt me-1"></i> Secure</span>
+                <span class="me-3"><i class="fas fa-bolt me-1"></i> Real-time</span>
+                <span class="me-3"><i class="fas fa-brain me-1"></i> AI-Powered</span>
+                <span><i class="fas fa-chart-line me-1"></i> Optimized</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script>
+        // Initialize Socket.IO
+        const socket = io();
+
+        // Load stats on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDashboardStats();
+
+            // Connect to WebSocket for real-time updates
+            socket.on('passenger_entered', function(data) {
+                loadDashboardStats();
+                showNotification(`Passenger ${data.passenger_id} entered`, 'success');
+            });
+
+            socket.on('passenger_exit', function(data) {
+                loadDashboardStats();
+                const type = data.anomaly ? 'warning' : 'success';
+                showNotification(`Passenger ${data.passenger_id} exited - ${data.anomaly ? 'Anomaly Detected!' : 'Normal'}`, type);
+            });
+
+            socket.on('driver_alert', function(data) {
+                showNotification(`Driver Alert: ${data.message}`, 'warning');
+                loadDashboardStats();
+            });
+
+            socket.on('profit_update', function(data) {
+                loadDashboardStats();
+                showNotification(`Profit Updated: ${data.message}`, 'info');
+            });
+        });
+
+        function loadDashboardStats() {
+            fetch('/api/dashboard_stats')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('totalPassengers').textContent = data.total_passengers || 0;
+                    document.getElementById('activeDrivers').textContent = data.active_drivers || 0;
+                    document.getElementById('anomalies').textContent = data.anomalies || 0;
+                    document.getElementById('profitToday').textContent = formatCurrency(data.profit_today || 0);
+                })
+                .catch(error => console.error('Error loading stats:', error));
+        }
+
+        function formatCurrency(amount) {
+            if (amount >= 1000000) {
+                return 'LKR ' + (amount / 1000000).toFixed(1) + 'M';
+            } else if (amount >= 1000) {
+                return 'LKR ' + (amount / 1000).toFixed(1) + 'K';
+            } else {
+                return 'LKR ' + amount.toFixed(0);
+            }
+        }
+
+        function openDashboard() {
+            window.location.href = '/dashboard';
+        }
+
+        function openDrivingAbility() {
+            window.location.href = '/driving_ability';
+        }
+
+        function openDrunkardDetection() {
+            window.location.href = '/drunkard_level';
+        }
+
+        function openProfitAssessment() {
+            window.location.href = '/profit_assessment';
+        }
+
+        function openOtherFeatures() {
+            window.location.href = '/other';
+        }
+
+        function showNotification(message, type = 'info') {
+            // Create notification element
+            const alertClass = {
+                'success': 'alert-success',
+                'error': 'alert-danger',
+                'warning': 'alert-warning',
+                'info': 'alert-info'
+            }[type] || 'alert-info';
+
+            const notification = document.createElement('div');
+            notification.className = `alert ${alertClass} alert-dismissible fade show position-fixed`;
+            notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+
+            document.body.appendChild(notification);
+
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
+
+        // Check for active bus turn on load
+        fetch('/api/system_status')
+            .then(response => response.json())
+            .then(data => {
+                if (data.active_journeys > 0) {
+                    showNotification(`${data.active_journeys} active journeys in progress`, 'info');
+                }
+            });
+    </script>
+</body>
+</html>
