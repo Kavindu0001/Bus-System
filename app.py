@@ -760,6 +760,9 @@ def get_active_passengers():
         'passengers': list(active_passengers.keys())
     })
 
+@app.route('/other')
+def other_features():
+    return render_template('other.html')
 
 # WebSocket events
 @socketio.on('connect')
