@@ -203,9 +203,14 @@
 
                 showStatus('Camera started successfully', 'success');
             } catch (err) {
-                console.error('Error accessing camera:', err);
-                showStatus('Failed to access camera: ' + err.message, 'error');
-            }
+    console.error('Error accessing camera:', err);
+
+    if (err.name === 'NotAllowedError') {
+        showStatus('Camera permission denied. Please allow camera access.', 'error');
+    } else {
+        showStatus('Failed to access camera: ' + err.message, 'error');
+    }
+}
         }
 
         function stopCamera() {
