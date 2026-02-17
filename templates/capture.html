@@ -384,7 +384,7 @@
             const formData = new FormData();
 
             if (captureType === 'entrance') {
-                const passengerName = document.getElementById('passengerName').value || 'Unknown';
+                const passengerName = document.getElementById('passengerName').value.trim() || 'Unknown';
                 formData.append('name', passengerName);
 
                 // Add images as files
