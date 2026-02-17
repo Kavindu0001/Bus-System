@@ -230,10 +230,10 @@
         }
 
         function captureImage() {
-            if (!stream) {
-                showStatus('Please start camera first', 'error');
-                return;
-            }
+            if (cameraPreview.videoWidth === 0 || cameraPreview.videoHeight === 0) {
+            showStatus('Camera not ready yet. Please wait...', 'warning');
+            return;
+}
 
             if (capturedImages.length >= requiredImages) {
                 showStatus(`Already captured ${requiredImages} images`, 'warning');
@@ -385,7 +385,7 @@
             const formData = new FormData();
 
             if (captureType === 'entrance') {
-                const passengerName = document.getElementById('passengerName').value || 'Unknown';
+                const passengerName = document.getElementById('passengerName').value.trim() || 'Unknown';
                 formData.append('name', passengerName);
 
                 // Add images as files
