@@ -229,10 +229,10 @@
         }
 
         function captureImage() {
-            if (!stream) {
-                showStatus('Please start camera first', 'error');
-                return;
-            }
+            if (cameraPreview.videoWidth === 0 || cameraPreview.videoHeight === 0) {
+            showStatus('Camera not ready yet. Please wait...', 'warning');
+            return;
+}
 
             if (capturedImages.length >= requiredImages) {
                 showStatus(`Already captured ${requiredImages} images`, 'warning');
