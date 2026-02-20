@@ -3,414 +3,784 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About - Passenger Anomaly Detection System</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>About - Travel Agent Supporting Tool</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* ── Theme variables (same as home.html) ─────────────────── */
+        :root {
+            --primary-color:   #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color:    #e74c3c;
+            --light-color:     #ecf0f1;
+            --success-color:   #2ecc71;
+            --warning-color:   #f39c12;
+            --info-color:      #17a2b8;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        /* ── Navbar ──────────────────────────────────────────────── */
+        .navbar-brand { font-weight: bold; font-size: 1.5rem; }
+
+        .live-indicator {
+            display: inline-block;
+            width: 10px; height: 10px;
+            background-color: var(--success-color);
+            border-radius: 50%;
+            margin-right: 5px;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:.5; } }
+
+        .system-status {
+            font-size: .9rem;
+            padding: .5rem 1rem;
+            border-radius: 20px;
+            background: rgba(46,204,113,.1);
+            border: 1px solid rgba(46,204,113,.3);
+            color: #fff;
+        }
+
+        /* ── Page wrapper ────────────────────────────────────────── */
+        .about-wrapper {
+            background: rgba(255,255,255,.95);
+            border-radius: 20px;
+            padding: 3rem;
+            margin: 2rem auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,.2);
+        }
+
+        /* ── Page title ──────────────────────────────────────────── */
+        .page-title {
+            font-size: 2.6rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: .8rem;
+            margin-bottom: .5rem;
+        }
+        .page-subtitle { color: #666; font-size: 1.1rem; }
+
+        /* ── Section headings ────────────────────────────────────── */
+        .section-heading {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+        }
+        .section-heading i { color: var(--secondary-color); }
+
+        /* ── Cards shared style ──────────────────────────────────── */
+        .info-card {
+            background: #fff;
+            border-radius: 15px;
+            padding: 1.8rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,.08);
+            transition: transform .3s ease, box-shadow .3s ease;
+            height: 100%;
+            border: 1px solid #eee;
+        }
+        .info-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 24px rgba(0,0,0,.12);
+        }
+
+        /* ── Feature icon bubbles ────────────────────────────────── */
+        .feature-bubble {
+            width: 64px; height: 64px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.6rem;
+            margin-bottom: 1rem;
+        }
+        .bubble-green  { background: rgba(46,204,113,.12); color: var(--success-color); }
+        .bubble-blue   { background: rgba(52,152,219,.12); color: var(--secondary-color); }
+        .bubble-orange { background: rgba(243,156,18,.12); color: var(--warning-color); }
+        .bubble-red    { background: rgba(231,76,60,.12);  color: var(--accent-color); }
+        .bubble-purple { background: rgba(155,89,182,.12); color: #9b59b6; }
+        .bubble-teal   { background: rgba(23,162,184,.12); color: var(--info-color); }
+
+        /* ── Architecture layers ─────────────────────────────────── */
+        .arch-card {
+            border-radius: 12px;
+            padding: 1.4rem 1.6rem;
+            height: 100%;
+        }
+        .arch-frontend  { background: linear-gradient(135deg,#e3f2fd,#bbdefb); border-left: 4px solid var(--secondary-color); }
+        .arch-app       { background: linear-gradient(135deg,#e8f5e9,#c8e6c9); border-left: 4px solid var(--success-color); }
+        .arch-ml        { background: linear-gradient(135deg,#fce4ec,#f8bbd0); border-left: 4px solid var(--accent-color); }
+        .arch-data      { background: linear-gradient(135deg,#fff8e1,#ffecb3); border-left: 4px solid var(--warning-color); }
+
+        .arch-card h5 { font-weight: 700; margin-bottom: .8rem; color: var(--primary-color); }
+        .arch-card ul { padding-left: 1.2rem; margin: 0; }
+        .arch-card ul li { font-size: .92rem; margin-bottom: .3rem; color: #555; }
+
+        /* ── Tech stack badge pills ──────────────────────────────── */
+        .tech-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            padding: .45rem 1rem;
+            border-radius: 30px;
+            font-size: .88rem;
+            font-weight: 600;
+            margin: .3rem;
+        }
+
+        /* ── Database schema cards ───────────────────────────────── */
+        .schema-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1.2rem 1.4rem;
+            border: 1px solid #dee2e6;
+            height: 100%;
+        }
+        .schema-card h6 {
+            font-weight: 700;
+            color: var(--primary-color);
+            font-size: .95rem;
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: .4rem;
+            margin-bottom: .7rem;
+        }
+        .schema-card ul { padding-left: 1.1rem; margin: 0; }
+        .schema-card ul li { font-size: .85rem; color: #555; margin-bottom: .2rem; }
+
+        /* ── Vision timeline items ───────────────────────────────── */
+        .vision-item {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+            padding: 1rem 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .vision-item:last-child { border-bottom: none; }
+        .vision-dot {
+            width: 40px; height: 40px; min-width: 40px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem;
+            color: #fff;
+        }
+        .vision-item h6 { font-weight: 700; margin-bottom: .25rem; color: var(--primary-color); }
+        .vision-item p  { font-size: .9rem; color: #666; margin: 0; }
+
+        /* ── Stat counter cards ──────────────────────────────────── */
+        .stat-card {
+            background: #fff;
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,.08);
+            transition: transform .3s ease;
+        }
+        .stat-card:hover { transform: translateY(-5px); }
+        .stat-number {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: var(--secondary-color);
+            line-height: 1;
+        }
+        .stat-label {
+            font-size: .82rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: .4rem;
+        }
+
+        /* ── Section divider ─────────────────────────────────────── */
+        .section-divider {
+            height: 3px;
+            border-radius: 2px;
+            background: linear-gradient(90deg, var(--secondary-color), transparent);
+            margin: 2.5rem 0;
+        }
+
+        /* ── Footer (matches home.html) ──────────────────────────── */
+        footer {
+            margin-top: 3rem;
+            padding: 2rem 0;
+            background: rgba(0,0,0,.8);
+            color: #fff;
+            border-radius: 20px 20px 0 0;
+        }
+
+        /* ── Responsive tweaks ───────────────────────────────────── */
+        @media (max-width: 768px) {
+            .about-wrapper { padding: 1.5rem 1rem; }
+            .page-title    { font-size: 2rem; }
+        }
+    </style>
 </head>
 <body>
-    <div class="container about-container">
-        <header class="about-header">
-            <h1><i class="fas fa-info-circle"></i> About the System</h1>
-            <div class="header-actions">
-                <button class="btn btn-primary" onclick="location.href='/'">
-                    <i class="fas fa-home"></i> Home
-                </button>
-                <button class="btn btn-secondary" onclick="location.href='/dashboard'">
-                    <i class="fas fa-tachometer-alt"></i> Dashboard
-                </button>
+
+    <!-- ── Navbar (identical to home.html) ───────────────────────── -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: rgba(0,0,0,0.8);">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-bus me-2"></i>Travel Agent Supporting Tool
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/dashboard">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/history">History</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/about">About</a></li>
+                </ul>
+                <div class="system-status ms-3">
+                    <span class="live-indicator"></span> System Ready
+                </div>
             </div>
-        </header>
+        </div>
+    </nav>
 
-        <div class="about-content">
-            <!-- System Overview -->
-            <section class="about-section">
-                <h2><i class="fas fa-cogs"></i> System Overview</h2>
-                <div class="section-content">
-                    <p>
-                        The Passenger Anomaly Detection System is a comprehensive web application designed for
-                        real-time monitoring of passenger appearance changes during bus journeys. The system uses
-                        advanced Machine Learning techniques to detect potential security threats and appearance
-                        anomalies.
-                    </p>
+    <!-- ── Main content ───────────────────────────────────────────── -->
+    <div class="container">
+        <div class="about-wrapper">
 
-                    <div class="features-grid">
-                        <div class="feature-item">
-                            <div class="feature-icon">
-                                <i class="fas fa-camera"></i>
-                            </div>
-                            <h4>Real-time Image Capture</h4>
-                            <p>Capture 4 entrance images within 5 seconds and 1 exit image for comparison</p>
+            <!-- ── Page Title ──────────────────────────────────────── -->
+            <div class="text-center mb-5">
+                <h1 class="page-title">
+                    <i class="fas fa-info-circle me-2" style="color:var(--secondary-color);"></i>
+                    About This System
+                </h1>
+                <p class="page-subtitle">
+                    Final-year research project &mdash; AI-powered passenger safety &amp; travel operations platform
+                </p>
+            </div>
+
+            <!-- ══════ 1. Project Overview ════════════════════════════ -->
+            <section>
+                <h2 class="section-heading">
+                    <i class="fas fa-project-diagram"></i> Project Overview
+                </h2>
+                <div class="row g-4 align-items-center">
+                    <div class="col-lg-7">
+                        <p class="fs-6 lh-lg text-secondary">
+                            The <strong style="color:var(--primary-color);">Travel Agent Supporting Tool</strong>
+                            is a comprehensive, AI-driven web application built to enhance passenger safety,
+                            monitor driver behaviour, detect alcohol impairment, and optimise route profitability
+                            for Sri Lankan travel agencies.
+                        </p>
+                        <p class="fs-6 lh-lg text-secondary">
+                            At its core, the system captures passenger images on entry and exit, then uses a
+                            cascade of deep-learning models — GAN-based reconstruction and a Siamese similarity
+                            network — to flag appearance anomalies in under five seconds, without disrupting
+                            the boarding flow.
+                        </p>
+                        <div class="d-flex flex-wrap gap-2 mt-3">
+                            <a href="/dashboard" class="btn btn-primary btn-sm">
+                                <i class="fas fa-tachometer-alt me-1"></i>Live Dashboard
+                            </a>
+                            <a href="/capture" class="btn btn-outline-success btn-sm">
+                                <i class="fas fa-camera me-1"></i>Capture Images
+                            </a>
+                            <a href="/history" class="btn btn-outline-secondary btn-sm">
+                                <i class="fas fa-history me-1"></i>View History
+                            </a>
                         </div>
+                    </div>
+                    <div class="col-lg-5">
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <div class="stat-card">
+                                    <div class="stat-number">&lt;5s</div>
+                                    <div class="stat-label">Detection Time</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="stat-card">
+                                    <div class="stat-number">4+1</div>
+                                    <div class="stat-label">Image Captures</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="stat-card">
+                                    <div class="stat-number">5</div>
+                                    <div class="stat-label">AI Modules</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="stat-card">
+                                    <div class="stat-number">RT</div>
+                                    <div class="stat-label">Real-time WS</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-                        <div class="feature-item">
-                            <div class="feature-icon">
+            <div class="section-divider"></div>
+
+            <!-- ══════ 2. Key Features ════════════════════════════════ -->
+            <section>
+                <h2 class="section-heading">
+                    <i class="fas fa-star"></i> Key Features
+                </h2>
+                <div class="row g-4">
+
+                    <!-- GAN -->
+                    <div class="col-md-6 col-lg-4">
+                        <div class="info-card">
+                            <div class="feature-bubble bubble-red">
                                 <i class="fas fa-brain"></i>
                             </div>
-                            <h4>GAN-based Detection</h4>
-                            <p>Uses Generative Adversarial Networks for accurate anomaly detection</p>
+                            <h5 style="color:var(--primary-color); font-weight:700;">GAN-based Anomaly Detection</h5>
+                            <p class="text-secondary" style="font-size:.93rem; line-height:1.6;">
+                                A Generator-Discriminator pair learns the distribution of normal passenger
+                                appearances. At exit, reconstruction error flags suspicious deviations, even
+                                for unseen anomaly types.
+                            </p>
+                            <span class="badge" style="background:rgba(231,76,60,.12); color:var(--accent-color);">
+                                TensorFlow / Keras
+                            </span>
                         </div>
+                    </div>
 
-                        <div class="feature-item">
-                            <div class="feature-icon">
+                    <!-- Siamese -->
+                    <div class="col-md-6 col-lg-4">
+                        <div class="info-card">
+                            <div class="feature-bubble bubble-blue">
                                 <i class="fas fa-user-shield"></i>
                             </div>
-                            <h4>Person Re-identification</h4>
-                            <p>Siamese network for reliable person matching across different time points</p>
+                            <h5 style="color:var(--primary-color); font-weight:700;">Siamese Re-identification</h5>
+                            <p class="text-secondary" style="font-size:.93rem; line-height:1.6;">
+                                Twin networks with shared weights compute cosine similarity between entrance
+                                and exit embeddings. A threshold of 0.7 determines whether the same
+                                passenger is confirmed.
+                            </p>
+                            <span class="badge" style="background:rgba(52,152,219,.12); color:var(--secondary-color);">
+                                128 x 128 RGB Input
+                            </span>
                         </div>
+                    </div>
 
-                        <div class="feature-item">
-                            <div class="feature-icon">
+                    <!-- Real-time Tracking -->
+                    <div class="col-md-6 col-lg-4">
+                        <div class="info-card">
+                            <div class="feature-bubble bubble-green">
+                                <i class="fas fa-satellite-dish"></i>
+                            </div>
+                            <h5 style="color:var(--primary-color); font-weight:700;">Real-time Passenger Tracking</h5>
+                            <p class="text-secondary" style="font-size:.93rem; line-height:1.6;">
+                                Flask-SocketIO pushes live events — passenger entry, exit, and anomaly alerts —
+                                directly to the dashboard without polling, keeping operators informed instantly.
+                            </p>
+                            <span class="badge" style="background:rgba(46,204,113,.12); color:var(--success-color);">
+                                WebSocket / Socket.IO
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- MongoDB -->
+                    <div class="col-md-6 col-lg-4">
+                        <div class="info-card">
+                            <div class="feature-bubble bubble-orange">
                                 <i class="fas fa-database"></i>
                             </div>
-                            <h4>Comprehensive Tracking</h4>
-                            <p>MongoDB database for storing all journey data, images, and alerts</p>
+                            <h5 style="color:var(--primary-color); font-weight:700;">MongoDB Data Store</h5>
+                            <p class="text-secondary" style="font-size:.93rem; line-height:1.6;">
+                                Five schema-validated collections — passengers, journeys, images, alerts, and
+                                system_logs — store every event with indexed queries for fast retrieval
+                                and auditing.
+                            </p>
+                            <span class="badge" style="background:rgba(243,156,18,.12); color:var(--warning-color);">
+                                PyMongo Driver
+                            </span>
                         </div>
                     </div>
+
+                    <!-- Driver Assessment -->
+                    <div class="col-md-6 col-lg-4">
+                        <div class="info-card">
+                            <div class="feature-bubble bubble-purple">
+                                <i class="fas fa-car"></i>
+                            </div>
+                            <h5 style="color:var(--primary-color); font-weight:700;">Driver Ability Assessment</h5>
+                            <p class="text-secondary" style="font-size:.93rem; line-height:1.6;">
+                                Monitors fatigue patterns and unsafe driving behaviours. Generates alerts and
+                                recommendations to maintain service quality and reduce accident risk.
+                            </p>
+                            <span class="badge" style="background:rgba(155,89,182,.12); color:#9b59b6;">
+                                ML Classification
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Profit Prediction -->
+                    <div class="col-md-6 col-lg-4">
+                        <div class="info-card">
+                            <div class="feature-bubble bubble-teal">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <h5 style="color:var(--primary-color); font-weight:700;">Profit Assessment</h5>
+                            <p class="text-secondary" style="font-size:.93rem; line-height:1.6;">
+                                Predicts route profitability using ML models trained on Sri Lankan bus
+                                operational data (40,000 records), surfacing actionable cost and revenue
+                                optimisation suggestions.
+                            </p>
+                            <span class="badge" style="background:rgba(23,162,184,.12); color:var(--info-color);">
+                                XGBoost / sklearn
+                            </span>
+                        </div>
+                    </div>
+
                 </div>
             </section>
 
-            <!-- Architecture -->
-            <section class="about-section">
-                <h2><i class="fas fa-sitemap"></i> System Architecture</h2>
-                <div class="section-content">
-                    <div class="architecture-diagram">
-                        <div class="arch-layer">
-                            <h4>Frontend Layer</h4>
+            <div class="section-divider"></div>
+
+            <!-- ══════ 3. System Architecture ═════════════════════════ -->
+            <section>
+                <h2 class="section-heading">
+                    <i class="fas fa-sitemap"></i> System Architecture
+                </h2>
+                <div class="row g-3">
+                    <div class="col-md-6 col-lg-3">
+                        <div class="arch-card arch-frontend">
+                            <h5><i class="fas fa-desktop me-2"></i>Frontend</h5>
                             <ul>
-                                <li>Flask Templates (HTML/CSS/JavaScript)</li>
-                                <li>Real-time WebSocket updates</li>
-                                <li>Responsive dashboard interface</li>
+                                <li>Bootstrap 5 responsive UI</li>
+                                <li>Jinja2 Flask templates</li>
+                                <li>Socket.IO live updates</li>
+                                <li>Font Awesome icons</li>
                             </ul>
                         </div>
-
-                        <div class="arch-layer">
-                            <h4>Application Layer</h4>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <div class="arch-card arch-app">
+                            <h5><i class="fas fa-server me-2"></i>Application</h5>
                             <ul>
-                                <li>Flask web application</li>
-                                <li>RESTful API endpoints</li>
+                                <li>Flask (Python)</li>
+                                <li>RESTful JSON APIs</li>
                                 <li>Image processing pipeline</li>
-                                <li>Business logic implementation</li>
+                                <li>Session management</li>
                             </ul>
                         </div>
-
-                        <div class="arch-layer">
-                            <h4>ML Layer</h4>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <div class="arch-card arch-ml">
+                            <h5><i class="fas fa-brain me-2"></i>ML Layer</h5>
                             <ul>
-                                <li>GAN models for anomaly detection</li>
-                                <li>Siamese network for person re-ID</li>
-                                <li>TensorFlow/Keras inference engine</li>
-                                <li>Real-time processing (< 5 seconds)</li>
+                                <li>GAN (generator + discriminator)</li>
+                                <li>Siamese Network</li>
+                                <li>TensorFlow 2.x inference</li>
+                                <li>OpenCV preprocessing</li>
                             </ul>
                         </div>
-
-                        <div class="arch-layer">
-                            <h4>Data Layer</h4>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <div class="arch-card arch-data">
+                            <h5><i class="fas fa-database me-2"></i>Data Layer</h5>
                             <ul>
-                                <li>MongoDB database</li>
-                                <li>5 collections for comprehensive tracking</li>
-                                <li>Image storage and metadata management</li>
-                                <li>Real-time logging and auditing</li>
+                                <li>MongoDB 7.x</li>
+                                <li>5 validated collections</li>
+                                <li>Indexed queries</li>
+                                <li>Schema validation</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Flow diagram -->
+                <div class="mt-4 p-3 rounded" style="background:#f8f9fa; border:1px dashed #dee2e6;">
+                    <div class="d-flex flex-wrap justify-content-center align-items-center gap-2 text-center" style="font-size:.85rem; font-weight:600; color:#555;">
+                        <span class="px-3 py-2 rounded" style="background:#bbdefb;">Camera Capture</span>
+                        <i class="fas fa-arrow-right text-muted"></i>
+                        <span class="px-3 py-2 rounded" style="background:#c8e6c9;">Flask API</span>
+                        <i class="fas fa-arrow-right text-muted"></i>
+                        <span class="px-3 py-2 rounded" style="background:#f8bbd0;">GAN + Siamese</span>
+                        <i class="fas fa-arrow-right text-muted"></i>
+                        <span class="px-3 py-2 rounded" style="background:#ffecb3;">MongoDB</span>
+                        <i class="fas fa-arrow-right text-muted"></i>
+                        <span class="px-3 py-2 rounded" style="background:#d1c4e9;">WebSocket Alert</span>
+                        <i class="fas fa-arrow-right text-muted"></i>
+                        <span class="px-3 py-2 rounded" style="background:#b2dfdb;">Dashboard</span>
+                    </div>
+                </div>
+            </section>
+
+            <div class="section-divider"></div>
+
+            <!-- ══════ 4. Technology Stack ═════════════════════════════ -->
+            <section>
+                <h2 class="section-heading">
+                    <i class="fas fa-layer-group"></i> Technology Stack
+                </h2>
+                <div class="row g-4">
+
+                    <div class="col-md-6">
+                        <h6 class="fw-bold mb-3" style="color:var(--primary-color);">Backend &amp; Infrastructure</h6>
+                        <div>
+                            <span class="tech-badge" style="background:#e8f5e9; color:#2e7d32;"><i class="fab fa-python"></i> Python 3.10+</span>
+                            <span class="tech-badge" style="background:#e3f2fd; color:#1565c0;"><i class="fas fa-flask"></i> Flask 2.x</span>
+                            <span class="tech-badge" style="background:#fce4ec; color:#b71c1c;"><i class="fas fa-plug"></i> Flask-SocketIO</span>
+                            <span class="tech-badge" style="background:#fff8e1; color:#e65100;"><i class="fas fa-leaf"></i> MongoDB 7.x</span>
+                            <span class="tech-badge" style="background:#f3e5f5; color:#6a1b9a;"><i class="fas fa-cogs"></i> PyMongo</span>
+                            <span class="tech-badge" style="background:#e0f7fa; color:#006064;"><i class="fas fa-shield-alt"></i> python-dotenv</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <h6 class="fw-bold mb-3" style="color:var(--primary-color);">Machine Learning &amp; Vision</h6>
+                        <div>
+                            <span class="tech-badge" style="background:#fbe9e7; color:#bf360c;"><i class="fas fa-fire"></i> TensorFlow 2.x</span>
+                            <span class="tech-badge" style="background:#efebe9; color:#3e2723;"><i class="fas fa-cubes"></i> Keras 3.x</span>
+                            <span class="tech-badge" style="background:#e8eaf6; color:#283593;"><i class="fas fa-eye"></i> OpenCV</span>
+                            <span class="tech-badge" style="background:#f9fbe7; color:#33691e;"><i class="fas fa-image"></i> Pillow</span>
+                            <span class="tech-badge" style="background:#e3f2fd; color:#0d47a1;"><i class="fas fa-wave-square"></i> NumPy</span>
+                            <span class="tech-badge" style="background:#fce4ec; color:#880e4f;"><i class="fas fa-chart-bar"></i> scikit-learn</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <h6 class="fw-bold mb-3" style="color:var(--primary-color);">Frontend</h6>
+                        <div>
+                            <span class="tech-badge" style="background:#e3f2fd; color:#1565c0;"><i class="fab fa-bootstrap"></i> Bootstrap 5</span>
+                            <span class="tech-badge" style="background:#fff9c4; color:#f57f17;"><i class="fab fa-js-square"></i> JavaScript ES6+</span>
+                            <span class="tech-badge" style="background:#e8f5e9; color:#2e7d32;"><i class="fas fa-bolt"></i> Socket.IO</span>
+                            <span class="tech-badge" style="background:#fce4ec; color:#ad1457;"><i class="fab fa-font-awesome"></i> Font Awesome 6</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <h6 class="fw-bold mb-3" style="color:var(--primary-color);">Dev &amp; Tooling</h6>
+                        <div>
+                            <span class="tech-badge" style="background:#f3e5f5; color:#6a1b9a;"><i class="fas fa-vial"></i> Conda / venv</span>
+                            <span class="tech-badge" style="background:#e0f2f1; color:#004d40;"><i class="fab fa-git-alt"></i> Git</span>
+                            <span class="tech-badge" style="background:#e8eaf6; color:#283593;"><i class="fas fa-terminal"></i> Homebrew (macOS)</span>
+                            <span class="tech-badge" style="background:#fff8e1; color:#e65100;"><i class="fab fa-jupyter"></i> Jupyter Notebooks</span>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <div class="section-divider"></div>
+
+            <!-- ══════ 5. Database Schema ══════════════════════════════ -->
+            <section>
+                <h2 class="section-heading">
+                    <i class="fas fa-table"></i> Database Schema
+                </h2>
+                <div class="row g-3">
+                    <div class="col-sm-6 col-lg">
+                        <div class="schema-card">
+                            <h6><i class="fas fa-users me-1" style="color:var(--success-color);"></i>passengers</h6>
+                            <ul>
+                                <li>passenger_id <em>(String)</em></li>
+                                <li>name <em>(String)</em></li>
+                                <li>total_journeys <em>(Int)</em></li>
+                                <li>last_seen <em>(Date)</em></li>
+                                <li>created_at <em>(Date)</em></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-lg">
+                        <div class="schema-card">
+                            <h6><i class="fas fa-route me-1" style="color:var(--secondary-color);"></i>journeys</h6>
+                            <ul>
+                                <li>journey_id <em>(String)</em></li>
+                                <li>bus_turn_id <em>(String)</em></li>
+                                <li>passenger_id <em>(String)</em></li>
+                                <li>entrance_time <em>(Date)</em></li>
+                                <li>exit_time <em>(Date)</em></li>
+                                <li>travel_time_seconds <em>(Int)</em></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-lg">
+                        <div class="schema-card">
+                            <h6><i class="fas fa-image me-1" style="color:var(--warning-color);"></i>images</h6>
+                            <ul>
+                                <li>image_id <em>(String)</em></li>
+                                <li>passenger_id <em>(String)</em></li>
+                                <li>image_type <em>(entrance/exit)</em></li>
+                                <li>image_path <em>(String)</em></li>
+                                <li>timestamp <em>(Date)</em></li>
+                                <li>journey_id <em>(String)</em></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-lg">
+                        <div class="schema-card">
+                            <h6><i class="fas fa-bell me-1" style="color:var(--accent-color);"></i>alerts</h6>
+                            <ul>
+                                <li>alert_id <em>(String)</em></li>
+                                <li>alert_type <em>(anomaly/normal)</em></li>
+                                <li>confidence <em>(Double)</em></li>
+                                <li>timestamp <em>(Date)</em></li>
+                                <li>image_paths <em>(Array)</em></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-lg">
+                        <div class="schema-card">
+                            <h6><i class="fas fa-clipboard-list me-1" style="color:#9b59b6;"></i>system_logs</h6>
+                            <ul>
+                                <li>log_id <em>(String)</em></li>
+                                <li>event_type <em>(String)</em></li>
+                                <li>description <em>(String)</em></li>
+                                <li>timestamp <em>(Date)</em></li>
+                                <li>metadata <em>(Object)</em></li>
                             </ul>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- ML Models -->
-            <section class="about-section">
-                <h2><i class="fas fa-robot"></i> Machine Learning Models</h2>
-                <div class="section-content">
-                    <div class="model-info">
-                        <h4>GAN (Generative Adversarial Network)</h4>
-                        <ul>
-                            <li><strong>Generator:</strong> Creates synthetic passenger images for training</li>
-                            <li><strong>Discriminator:</strong> Distinguishes between real and generated images</li>
-                            <li><strong>Purpose:</strong> Learns normal appearance patterns for anomaly detection</li>
-                        </ul>
-                    </div>
+            <div class="section-divider"></div>
 
-                    <div class="model-info">
-                        <h4>Siamese Network</h4>
-                        <ul>
-                            <li><strong>Architecture:</strong> Twin neural networks with shared weights</li>
-                            <li><strong>Purpose:</strong> Person re-identification and similarity measurement</li>
-                            <li><strong>Output:</strong> Similarity score between entrance and exit images</li>
-                        </ul>
-                    </div>
+            <!-- ══════ 6. Vision & Future Improvements ═════════════════ -->
+            <section>
+                <h2 class="section-heading">
+                    <i class="fas fa-rocket"></i> Vision &amp; Future Improvements
+                </h2>
+                <div class="row g-4">
+                    <div class="col-lg-6">
+                        <div class="info-card">
+                            <h6 class="fw-bold mb-3" style="color:var(--primary-color); font-size:1rem;">
+                                <i class="fas fa-road me-2" style="color:var(--secondary-color);"></i>Road Map
+                            </h6>
 
-                    <div class="model-info">
-                        <h4>Anomaly Detection Pipeline</h4>
-                        <ol>
-                            <li>Image preprocessing (128x128 RGB normalization)</li>
-                            <li>Feature extraction using Siamese network base model</li>
-                            <li>Similarity calculation using cosine similarity</li>
-                            <li>Anomaly classification based on threshold (0.7)</li>
-                            <li>Confidence scoring and alert generation</li>
-                        </ol>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Database Schema -->
-            <section class="about-section">
-                <h2><i class="fas fa-table"></i> Database Schema</h2>
-                <div class="section-content">
-                    <div class="schema-tables">
-                        <div class="schema-table">
-                            <h5>passengers</h5>
-                            <ul>
-                                <li>passenger_id (String)</li>
-                                <li>name (String)</li>
-                                <li>total_journeys (Int)</li>
-                                <li>last_seen (Date)</li>
-                                <li>created_at (Date)</li>
-                            </ul>
-                        </div>
-
-                        <div class="schema-table">
-                            <h5>journeys</h5>
-                            <ul>
-                                <li>journey_id (String)</li>
-                                <li>bus_turn_id (String)</li>
-                                <li>passenger_id (String)</li>
-                                <li>entrance_time (Date)</li>
-                                <li>exit_time (Date)</li>
-                                <li>travel_time_seconds (Int)</li>
-                                <li>date (Date)</li>
-                            </ul>
-                        </div>
-
-                        <div class="schema-table">
-                            <h5>images</h5>
-                            <ul>
-                                <li>image_id (String)</li>
-                                <li>passenger_id (String)</li>
-                                <li>image_type (String)</li>
-                                <li>image_path (String)</li>
-                                <li>timestamp (Date)</li>
-                                <li>journey_id (String)</li>
-                            </ul>
-                        </div>
-
-                        <div class="schema-table">
-                            <h5>alerts</h5>
-                            <ul>
-                                <li>alert_id (String)</li>
-                                <li>passenger_id (String)</li>
-                                <li>journey_id (String)</li>
-                                <li>alert_type (String)</li>
-                                <li>confidence (Double)</li>
-                                <li>timestamp (Date)</li>
-                                <li>image_paths (Array)</li>
-                            </ul>
-                        </div>
-
-                        <div class="schema-table">
-                            <h5>system_logs</h5>
-                            <ul>
-                                <li>log_id (String)</li>
-                                <li>event_type (String)</li>
-                                <li>description (String)</li>
-                                <li>timestamp (Date)</li>
-                                <li>metadata (Object)</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- API Documentation -->
-            <section class="about-section">
-                <h2><i class="fas fa-code"></i> API Documentation</h2>
-                <div class="section-content">
-                    <div class="api-endpoints">
-                        <div class="api-endpoint">
-                            <code>POST /start_journey</code>
-                            <p>Start a new bus turn</p>
-                        </div>
-
-                        <div class="api-endpoint">
-                            <code>POST /capture_entrance/&lt;passenger_id&gt;</code>
-                            <p>Capture 4 entrance images for a passenger</p>
-                        </div>
-
-                        <div class="api-endpoint">
-                            <code>POST /capture_exit/&lt;passenger_id&gt;</code>
-                            <p>Capture exit image and run anomaly detection</p>
-                        </div>
-
-                        <div class="api-endpoint">
-                            <code>GET /result/&lt;passenger_id&gt;</code>
-                            <p>View detection results for a passenger</p>
-                        </div>
-
-                        <div class="api-endpoint">
-                            <code>GET /dashboard</code>
-                            <p>Real-time monitoring dashboard</p>
-                        </div>
-
-                        <div class="api-endpoint">
-                            <code>GET /history</code>
-                            <p>Passenger travel history with filters</p>
-                        </div>
-
-                        <div class="api-endpoint">
-                            <code>POST /end_journey</code>
-                            <p>End current bus turn and generate report</p>
-                        </div>
-
-                        <div class="api-endpoint">
-                            <code>GET /api/recent_alerts</code>
-                            <p>Get recent alerts (JSON API)</p>
-                        </div>
-
-                        <div class="api-endpoint">
-                            <code>GET /api/passenger_history/&lt;passenger_id&gt;</code>
-                            <p>Get passenger journey history (JSON API)</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Technical Specifications -->
-            <section class="about-section">
-                <h2><i class="fas fa-microchip"></i> Technical Specifications</h2>
-                <div class="section-content">
-                    <div class="specs-grid">
-                        <div class="spec-item">
-                            <h4>Backend Framework</h4>
-                            <p>Flask (Python)</p>
-                        </div>
-
-                        <div class="spec-item">
-                            <h4>ML Framework</h4>
-                            <p>TensorFlow 2.x, Keras 3.x</p>
-                        </div>
-
-                        <div class="spec-item">
-                            <h4>Database</h4>
-                            <p>MongoDB (PyMongo driver)</p>
-                        </div>
-
-                        <div class="spec-item">
-                            <h4>Image Processing</h4>
-                            <p>OpenCV, PIL/Pillow</p>
-                        </div>
-
-                        <div class="spec-item">
-                            <h4>Real-time Communication</h4>
-                            <p>Flask-SocketIO, WebSocket</p>
-                        </div>
-
-                        <div class="spec-item">
-                            <h4>Frontend</h4>
-                            <p>HTML5, CSS3, JavaScript (ES6+)</p>
-                        </div>
-
-                        <div class="spec-item">
-                            <h4>Image Resolution</h4>
-                            <p>128x128 pixels (RGB)</p>
-                        </div>
-
-                        <div class="spec-item">
-                            <h4>Processing Time</h4>
-                            <p>&lt; 5 seconds per passenger</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Getting Started -->
-            <section class="about-section">
-                <h2><i class="fas fa-play-circle"></i> Getting Started</h2>
-                <div class="section-content">
-                    <div class="getting-started-steps">
-                        <div class="step">
-                            <div class="step-number">1</div>
-                            <div class="step-content">
-                                <h4>Installation</h4>
-                                <p>Install required dependencies:</p>
-                                <code>pip install flask flask-socketio pymongo opencv-python tensorflow pillow</code>
+                            <div class="vision-item">
+                                <div class="vision-dot" style="background:var(--secondary-color);">
+                                    <i class="fas fa-mobile-alt fa-sm"></i>
+                                </div>
+                                <div>
+                                    <h6>Mobile Application</h6>
+                                    <p>React Native companion app for conductor-side real-time alerts &amp; image capture.</p>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="step">
-                            <div class="step-number">2</div>
-                            <div class="step-content">
-                                <h4>Database Setup</h4>
-                                <p>Start MongoDB and create the database:</p>
-                                <code>mongod --dbpath ./data --port 27017</code>
+                            <div class="vision-item">
+                                <div class="vision-dot" style="background:var(--success-color);">
+                                    <i class="fas fa-cloud fa-sm"></i>
+                                </div>
+                                <div>
+                                    <h6>Cloud Deployment</h6>
+                                    <p>Containerise with Docker, deploy to AWS / GCP with auto-scaling and MongoDB Atlas.</p>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="step">
-                            <div class="step-number">3</div>
-                            <div class="step-content">
-                                <h4>Model Setup</h4>
-                                <p>Place trained models in the models/ directory:</p>
-                                <ul>
-                                    <li>generator.keras</li>
-                                    <li>discriminator.keras</li>
-                                    <li>gan.keras</li>
-                                    <li>siamese_network.keras</li>
-                                    <li>passenger_database.pkl</li>
-                                    <li>preprocessor_config.json</li>
-                                </ul>
+                            <div class="vision-item">
+                                <div class="vision-dot" style="background:var(--warning-color);">
+                                    <i class="fas fa-microchip fa-sm"></i>
+                                </div>
+                                <div>
+                                    <h6>Edge Inference</h6>
+                                    <p>TensorFlow Lite models on Raspberry Pi 4 for fully offline, on-device detection.</p>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="step">
-                            <div class="step-number">4</div>
-                            <div class="step-content">
-                                <h4>Run Application</h4>
-                                <p>Start the Flask application:</p>
-                                <code>python app.py</code>
-                                <p>Access the system at: <a href="http://localhost:5000">http://localhost:5000</a></p>
+                            <div class="vision-item">
+                                <div class="vision-dot" style="background:#9b59b6;">
+                                    <i class="fas fa-language fa-sm"></i>
+                                </div>
+                                <div>
+                                    <h6>Sinhala / Tamil UI</h6>
+                                    <p>Localised interface improving accessibility for non-English-speaking operators.</p>
+                                </div>
                             </div>
                         </div>
                     </div>
+
+                    <div class="col-lg-6">
+                        <div class="info-card">
+                            <h6 class="fw-bold mb-3" style="color:var(--primary-color); font-size:1rem;">
+                                <i class="fas fa-flask me-2" style="color:var(--accent-color);"></i>Research Extensions
+                            </h6>
+
+                            <div class="vision-item">
+                                <div class="vision-dot" style="background:var(--accent-color);">
+                                    <i class="fas fa-video fa-sm"></i>
+                                </div>
+                                <div>
+                                    <h6>Video-stream Tracking</h6>
+                                    <p>Extend from snapshot-based to continuous video tracking using YOLOv8 + DeepSORT.</p>
+                                </div>
+                            </div>
+
+                            <div class="vision-item">
+                                <div class="vision-dot" style="background:var(--info-color);">
+                                    <i class="fas fa-users-cog fa-sm"></i>
+                                </div>
+                                <div>
+                                    <h6>Federated Learning</h6>
+                                    <p>Train models across multiple bus fleets without sharing raw passenger imagery.</p>
+                                </div>
+                            </div>
+
+                            <div class="vision-item">
+                                <div class="vision-dot" style="background:#e67e22;">
+                                    <i class="fas fa-chart-pie fa-sm"></i>
+                                </div>
+                                <div>
+                                    <h6>Explainable AI (XAI)</h6>
+                                    <p>Grad-CAM visualisations showing which image regions triggered an anomaly alert.</p>
+                                </div>
+                            </div>
+
+                            <div class="vision-item">
+                                <div class="vision-dot" style="background:#1abc9c;">
+                                    <i class="fas fa-network-wired fa-sm"></i>
+                                </div>
+                                <div>
+                                    <h6>GTFS Integration</h6>
+                                    <p>Link journey data to real timetables for demand-side profit forecasting per route.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
+
+            <div class="section-divider"></div>
+
+            <!-- ══════ Quick Actions ══════════════════════════════════ -->
+            <div class="text-center">
+                <h5 class="mb-3" style="color:var(--primary-color);">Quick Access</h5>
+                <div class="d-flex flex-wrap justify-content-center gap-2">
+                    <a href="/dashboard"         class="btn btn-outline-primary btn-sm"><i class="fas fa-tachometer-alt me-1"></i>Dashboard</a>
+                    <a href="/drunkard_level"    class="btn btn-outline-danger btn-sm"><i class="fas fa-wine-bottle me-1"></i>Alcohol Detection</a>
+                    <a href="/driving_ability"   class="btn btn-outline-warning btn-sm"><i class="fas fa-car me-1"></i>Driver Ability</a>
+                    <a href="/profit_assessment" class="btn btn-outline-info btn-sm"><i class="fas fa-chart-bar me-1"></i>Profit Assessment</a>
+                    <a href="/history"           class="btn btn-outline-secondary btn-sm"><i class="fas fa-history me-1"></i>History</a>
+                    <a href="/capture"           class="btn btn-outline-success btn-sm"><i class="fas fa-camera me-1"></i>Capture</a>
+                </div>
+            </div>
+
+        </div><!-- /.about-wrapper -->
+    </div><!-- /.container -->
+
+    <!-- ── Footer (identical to home.html) ───────────────────────── -->
+    <footer>
+        <div class="container text-center">
+            <p class="mb-2">&copy; 2024 Travel Agent Supporting Tool. All rights reserved.</p>
+            <p class="text-muted">Powered by AI &amp; Machine Learning Technologies</p>
+            <div class="mt-3">
+                <span class="me-3"><i class="fas fa-shield-alt me-1"></i> Secure</span>
+                <span class="me-3"><i class="fas fa-bolt me-1"></i> Real-time</span>
+                <span class="me-3"><i class="fas fa-brain me-1"></i> AI-Powered</span>
+                <span><i class="fas fa-chart-line me-1"></i> Optimized</span>
+            </div>
         </div>
+    </footer>
 
-        <!-- Footer -->
-        <footer class="about-footer">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h4><i class="fas fa-shield-alt"></i> Security Features</h4>
-                    <ul>
-                        <li>Real-time anomaly detection</li>
-                        <li>Comprehensive audit logging</li>
-                        <li>Data encryption at rest</li>
-                        <li>Secure WebSocket communication</li>
-                    </ul>
-                </div>
-
-                <div class="footer-section">
-                    <h4><i class="fas fa-chart-line"></i> Performance Metrics</h4>
-                    <ul>
-                        <li>99.9% uptime</li>
-                        <li>&lt; 5 second processing time</li>
-                        <li>Real-time WebSocket updates</li>
-                        <li>Scalable MongoDB architecture</li>
-                    </ul>
-                </div>
-
-                <div class="footer-section">
-                    <h4><i class="fas fa-question-circle"></i> Support</h4>
-                    <p>For technical support or questions:</p>
-                    <p>Email: support@anomalydetection.com</p>
-                    <p>Documentation: <a href="#">View Full Docs</a></p>
-                </div>
-            </div>
-
-            <div class="footer-bottom">
-                <p>&copy; 2024 Passenger Anomaly Detection System. All rights reserved.</p>
-                <p>Version 1.0.0 | Built with Flask, TensorFlow, and MongoDB</p>
-            </div>
-        </footer>
-    </div>
-
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

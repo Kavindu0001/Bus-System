@@ -7,3 +7,5 @@ models/
 3models/
 static/
 
+# Environment variables — never commit secrets
+.env
