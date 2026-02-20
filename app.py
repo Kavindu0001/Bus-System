@@ -1056,19 +1056,24 @@ def internal_server_error(e):
 
 
 if __name__ == '__main__':
-    # Connect to MongoDB
-    if db_config.connect():
+    # Connect to MongoDB (falls back to DB-disabled mode on failure)
+    db_connected = db_config.connect()
+    if db_connected:
         print("Database connected successfully")
+        db_config.test_db_connection()   # ping and log result
         log_event('system_start', 'Flask application started')
-
-        # Ensure directories exist
-        os.makedirs('static/Entrance', exist_ok=True)
-        os.makedirs('static/Exit', exist_ok=True)
-        os.makedirs('static/css', exist_ok=True)
-        os.makedirs('static/js', exist_ok=True)
-        os.makedirs('templates', exist_ok=True)
-
-        # Run the application
-        socketio.run(app, host='0.0.0.0', port=5002, debug=True, allow_unsafe_werkzeug=True)
     else:
-        print("Failed to connect to database")
+        print(
+            "[APP] WARNING: Running without a database connection. "
+            "All DB reads will return empty results and writes will be skipped."
+        )
+
+    # Ensure directories exist regardless of DB status
+    os.makedirs('static/Entrance', exist_ok=True)
+    os.makedirs('static/Exit', exist_ok=True)
+    os.makedirs('static/css', exist_ok=True)
+    os.makedirs('static/js', exist_ok=True)
+    os.makedirs('templates', exist_ok=True)
+
+    # Run the application
+    socketio.run(app, host='0.0.0.0', port=5002, debug=True, allow_unsafe_werkzeug=True)

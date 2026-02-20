@@ -1,26 +1,109 @@
 from pymongo import MongoClient
 from datetime import datetime
 import os
+import logging
 from dotenv import load_dotenv
 
-load_dotenv()
+# Load .env from the same directory as this file so it works regardless of cwd
+load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), '.env'))
+
+logger = logging.getLogger(__name__)
+
+
+# ---------------------------------------------------------------------------
+# Null-object helpers — used when DB is disabled so attribute access on
+# db_config.db.collection.method() never raises AttributeError.
+# ---------------------------------------------------------------------------
+
+class _NullCursor:
+    """Mimics a PyMongo cursor with no documents."""
+    def __iter__(self):
+        return iter([])
+    def sort(self, *a, **kw):
+        return self
+    def limit(self, *a, **kw):
+        return self
+    def skip(self, *a, **kw):
+        return self
+
+
+class _NullCollection:
+    """Returns safe no-op / empty responses for every collection access."""
+    def find(self, *a, **kw):
+        return _NullCursor()
+    def find_one(self, *a, **kw):
+        return None
+    def insert_one(self, *a, **kw):
+        return None
+    def update_one(self, *a, **kw):
+        return None
+    def delete_one(self, *a, **kw):
+        return None
+    def count_documents(self, *a, **kw):
+        return 0
+    def distinct(self, *a, **kw):
+        return []
+    def create_index(self, *a, **kw):
+        return None
+    # aggregate / bulk helpers
+    def aggregate(self, *a, **kw):
+        return _NullCursor()
+
+
+class _NullDatabase:
+    """Returns a _NullCollection for every attribute access."""
+    def __getattr__(self, name):
+        return _NullCollection()
+    def list_collection_names(self):
+        return []
+    def create_collection(self, *a, **kw):
+        return _NullCollection()
+    def __getitem__(self, name):
+        return _NullCollection()
 
 
 class MongoDBConfig:
+    _DEFAULT_URI = 'mongodb://localhost:27017/'
+
     def __init__(self):
-        # MongoDB connection
-        self.mongo_uri = os.getenv('MONGO_URI', 'mongodb://localhost:27017/')
-        self.database_name = 'Passenger_Anomaly'
+        # Read connection settings from environment variables.
+        # Falls back to localhost so the app works out-of-the-box without a .env file.
+        raw_uri = os.getenv('MONGO_URI')
+        if raw_uri:
+            self.mongo_uri = raw_uri
+        else:
+            self.mongo_uri = self._DEFAULT_URI
+            print(
+                "[CONFIG] WARNING: MONGO_URI is not set in the environment. "
+                f"Defaulting to {self._DEFAULT_URI}. "
+                "Create a .env file with MONGO_URI=<your-uri> to override."
+            )
+            logger.warning("MONGO_URI not set — using default: %s", self._DEFAULT_URI)
+
+        self.database_name = os.getenv('DB_NAME', 'Passenger_Anomaly')
         self.client = None
-        self.db = None
+        self.db_disabled = False
+
+        # _db is the real or null database; accessed via the .db property below
+        self._db = _NullDatabase()
+
+    # ------------------------------------------------------------------
+    # Public property — always safe to access
+    # ------------------------------------------------------------------
+    @property
+    def db(self):
+        return self._db
 
     def connect(self):
         """Establish MongoDB connection with retry logic"""
+        if self.db_disabled:
+            print("[CONFIG] DB-disabled mode active — skipping connection attempt.")
+            return False
         try:
             self.client = MongoClient(self.mongo_uri, serverSelectionTimeoutMS=5000)
             self.client.server_info()  # Will throw exception if connection fails
-            self.db = self.client[self.database_name]
-            print(f"Connected to MongoDB: {self.database_name}")
+            self._db = self.client[self.database_name]
+            print(f"[CONFIG] Connected to MongoDB: {self.database_name}")
 
             # Create collections with validation schemas
             self._create_collections()
@@ -28,7 +111,36 @@ class MongoDBConfig:
 
             return True
         except Exception as e:
-            print(f"MongoDB connection failed: {e}")
+            err = str(e)
+            print(f"[CONFIG] MongoDB connection failed: {err}")
+            if 'ECONNREFUSED' in err or 'Connection refused' in err or '27017' in err:
+                print(
+                    "[CONFIG] HINT: MongoDB is not running on this machine. "
+                    "Start it with:  brew services start mongodb-community"
+                    "  — or check the MongoDB installation section in README."
+                )
+            logger.error("MongoDB connection failed: %s", err)
+            self.db_disabled = True  # fall back to null mode after failure
+            return False
+
+    def test_db_connection(self):
+        """
+        Ping MongoDB and log success/failure.
+        Call this once at application startup after connect().
+        Returns True if the server is reachable, False otherwise.
+        """
+        if self.db_disabled or self.client is None:
+            print("[CONFIG] test_db_connection: DB-disabled mode — ping skipped.")
+            logger.warning("test_db_connection: skipped (DB-disabled mode).")
+            return False
+        try:
+            self.client.admin.command('ping')
+            print("[CONFIG] test_db_connection: MongoDB ping successful ✓")
+            logger.info("MongoDB ping successful.")
+            return True
+        except Exception as e:
+            print(f"[CONFIG] test_db_connection: MongoDB ping FAILED — {e}")
+            logger.error("MongoDB ping failed: %s", e)
             return False
 
     def _create_collections(self):
@@ -153,7 +265,10 @@ class MongoDBConfig:
         return self.db[collection_name]
 
     def log_event(self, event_type, description, metadata=None):
-        """Log system event"""
+        """Log system event. Silently skips the write in DB-disabled mode."""
+        if self.db_disabled:
+            logger.debug("log_event skipped (DB-disabled): %s — %s", event_type, description)
+            return
         log_entry = {
             'log_id': f'log_{datetime.now().strftime("%Y%m%d%H%M%S%f")}',
             'event_type': event_type,
